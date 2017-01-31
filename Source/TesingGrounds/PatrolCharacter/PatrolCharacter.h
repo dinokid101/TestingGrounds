@@ -1,12 +1,12 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
-#include "TesingGroundsCharacter.generated.h"
+#include "PatrolCharacter.generated.h"
 
 class UInputComponent;
 
 UCLASS(config=Game)
-class ATesingGroundsCharacter : public ACharacter
+class APatrolCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -42,7 +42,7 @@ class ATesingGroundsCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UMotionControllerComponent* L_MotionController;
 public:
-	ATesingGroundsCharacter();
+	APatrolCharacter();
 
 	virtual void BeginPlay();
 

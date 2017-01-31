@@ -11,6 +11,11 @@ EBTNodeResult::Type UPatrolBTTaskNode::ExecuteTask(UBehaviorTreeComponent& Owner
 	auto BlackboardComp = OwnerComp.GetBlackboardComponent();
 	auto Index = BlackboardComp->GetValueAsInt(IndexKey.SelectedKeyName);
 	auto PatrolTargets = OwnerComp.GetAIOwner()->GetPawn()->FindComponentByClass<UPatrolComponent>()->PatrolPoints;
+	if (PatrolTargets.Num() == 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("NO PATROL TARGET!"));
+		return EBTNodeResult::Failed; 
+	}
 	BlackboardComp->SetValueAsObject(ActorKey.SelectedKeyName, PatrolTargets[Index++]);
 	if (Index >= PatrolTargets.Num())
 	{

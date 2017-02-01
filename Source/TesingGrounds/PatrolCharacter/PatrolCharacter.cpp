@@ -3,8 +3,7 @@
 #include "TesingGrounds.h"
 #include "PatrolCharacter/PatrolCharacter.h"
 #include "GameFramework/InputSettings.h"
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
-#include "MotionControllerComponent.h"
+#include "Gun.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -35,6 +34,7 @@ APatrolCharacter::APatrolCharacter()
 	Mesh1P->RelativeRotation = FRotator(1.9f, -19.19f, 5.2f);
 	Mesh1P->RelativeLocation = FVector(-0.5f, -4.4f, -155.7f);
 
+
 }
 
 void APatrolCharacter::BeginPlay()
@@ -42,9 +42,11 @@ void APatrolCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	FP_Gun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	//FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-
+	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &APatrolCharacter::TouchStarted);
+	FP_Gun->AnimInstance = Mesh1P->GetAnimInstance();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,10 +60,9 @@ void APatrolCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &APatrolCharacter::TouchStarted);
 	if (EnableTouchscreenMovement(PlayerInputComponent) == false)
 	{
-		//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APatrolCharacter::OnFire);
+		PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APatrolCharacter::Fire);
 	}
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APatrolCharacter::MoveForward);
@@ -164,6 +165,11 @@ void APatrolCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void APatrolCharacter::Fire()
+{
+	FP_Gun->OnFire();
 }
 
 bool APatrolCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)
